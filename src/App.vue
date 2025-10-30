@@ -1,24 +1,20 @@
 <script setup lang="ts">
-import { ref, provide } from 'vue';
-import { RouterView } from 'vue-router';
-import { HeaderBar } from '@/components';
+import { RouterView, useRoute } from 'vue-router';
+import { computed } from 'vue';
+import { useAuthSession } from '@/composables/useAuthSession';
 
-const isMobileMenuOpen = ref(false);
-provide('isMobileMenuOpen', isMobileMenuOpen);
+// Start auth session keep-alive when app mounts
+const { setup: setupAuth } = useAuthSession();
+setupAuth();
 
-const toggleMobileMenu = () => {
-	isMobileMenuOpen.value = !isMobileMenuOpen.value;
-};
+const route = useRoute();
+const layout = computed(() => route.meta.layout);
 </script>
 
 <template>
-	<div class="flex flex-col"></div>
-	<HeaderBar @toggle-mobile-menu="toggleMobileMenu" />
-	<main>
+	<component :is="layout || 'div'">
 		<RouterView />
-	</main>
+	</component>
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>

@@ -1,257 +1,197 @@
 <script setup lang="ts">
-import { ref, watch, inject } from 'vue';
-import type { Ref } from 'vue';
-import { SideBar as Sidebar } from '@/components'
+import { ref, onMounted, computed } from 'vue';
+import { getExperiences, type ExperienceLevel, type VacancySearchParams } from '@/api/positions';
+import { Button } from '@/components';
+import { pluralizeRu } from '@/lib/utils'
+import { EXPERIENCE_LABELS, SPECIALIZATIONS } from '@/lib/constants'
+import KeywordsInput from '@/components/search/KeywordsInput.vue'
+import SearchInToggles from '@/components/search/SearchInToggles.vue'
+import ExcludeWordsInput from '@/components/search/ExcludeWordsInput.vue'
+import IndustriesField from '@/components/search/IndustriesField.vue'
+import ExperienceSelect from '@/components/search/ExperienceSelect.vue'
+import SavePanel from '@/components/search/SavePanel.vue'
+import { useSearchPreferences } from '@/composables/useSearchPreferences'
+import { useVacancyCount } from '@/composables/useVacancyCount'
 
-import {
-	X,
-	LoaderCircle,
-	Save,
-	ExternalLink,
-	ArrowLeft,
-	Check,
-	ChevronDown,
-} from 'lucide-vue-next';
+import { ExternalLink, ArrowLeft } from 'lucide-vue-next';
 
-import {
-	CheckboxRoot,
-	CheckboxIndicator,
-	SelectRoot,
-	SelectContent,
-	SelectGroup,
-	SelectItem,
-	SelectItemText,
-	SelectTrigger,
-	SelectValue,
-	SelectPortal,
-	SelectViewport,
-	SelectIcon
-} from 'reka-ui';
+const experienceLevels = ref<ExperienceLevel[]>([]);
 
-const keywords = ref('');
-const searchInTitle = ref(true);
-const searchInDescription = ref(false);
-const excludeWords = ref('');
-const experience = ref('');
-const vacancyCount = ref<number | null>(null);
-const isLoading = ref(false);
-const isSidebarCollapsed = ref(false);
-const isMobileMenuOpen = inject<Ref<boolean>>('isMobileMenuOpen', ref(false));
+// TODO: заменить на параметр из роута
+const currentPositionId = ref(558);
 
-const industries = ref([
-	'Аналитик',
-	'Гейм-дизайнер',
-	'Дизайнер, художник',
-	'Менеджер продукта',
-	'Программист, разработчик',
-	'Продуктовый аналитик',
-	'Сетевой инженер'
-]);
+const {
+	keywords,
+	excludeWords,
+	searchInTitle,
+	searchInDescription,
+	experience,
+	selectedIndustryIds,
+	industries,
+	isPrefLoading,
+	isSaving,
+	saveSucceeded,
+	load,
+	save,
+} = useSearchPreferences(currentPositionId)
 
-const experienceOptions = [
-	'Нет опыта',
-	'1-3 года',
-	'3-5 лет',
-	'Более 5 лет'
-];
+const industriesCountText = computed(() => {
+	const count = industries.value.length
+	return `${count} ${pluralizeRu(count, ['отрасль', 'отрасли', 'отраслей'])}`
+})
 
-let searchTimeout: number | null = null;
+const specializations = [...SPECIALIZATIONS]
+const experienceLabels: Record<ExperienceLevel, string> = EXPERIENCE_LABELS
 
-watch([keywords, searchInTitle, searchInDescription, excludeWords, industries, experience], () => {
-	isLoading.value = true;
-	if (searchTimeout) clearTimeout(searchTimeout);
+onMounted(async () => {
+	try {
+		const levels = await getExperiences();
+		experienceLevels.value = levels;
+	} catch (err) {
+		console.error('[experiences] Failed to load:', err);
+	}
+	await load();
+});
 
-	searchTimeout = setTimeout(() => {
-		vacancyCount.value = Math.floor(Math.random() * 500) + 50;
-		isLoading.value = false;
-	}, 800);
-}, { deep: true });
+function clearIndustries() {
+	industries.value = [];
+	selectedIndustryIds.value = [];
+}
 
-const removeIndustry = (index: number) => {
-	industries.value = industries.value.filter((_, i) => i !== index);
-};
+const paramsGetter = () => {
+	const searchIn: ('title' | 'description')[] = [];
+	if (searchInTitle.value) searchIn.push('title');
+	if (searchInDescription.value) searchIn.push('description');
+	const params: VacancySearchParams = {
+		keywords: keywords.value ? keywords.value.split(',').map(k => k.trim()).filter(Boolean) : [],
+		exclude_keywords: excludeWords.value ? excludeWords.value.split(',').map(k => k.trim()).filter(Boolean) : [],
+		search_in: searchIn,
+		specializations: specializations,
+		industries: selectedIndustryIds.value,
+		excluded_employer_ids: [],
+		experience: experience.value && experience.value.length ? experience.value : []
+	};
+	return params;
+}
+const { vacancyCount, isLoading } = useVacancyCount(currentPositionId, paramsGetter, {
+	debounce: 800,
+	immediate: true,
+	watchSource: [keywords, excludeWords, searchInTitle, searchInDescription, selectedIndustryIds, experience]
+})
 
-const handleSave = () => {
-	console.log('Settings saved');
-};
+async function handleSave() {
+	await save({ specializations, excluded_employer_ids: [] })
+}
 </script>
 
 <template>
-	<div class="flex h-[calc(100vh-90px)]">
-
-		<Sidebar :collapsed="isSidebarCollapsed" @toggle="isSidebarCollapsed = !isSidebarCollapsed"
-			:is-mobile-open="isMobileMenuOpen" />
-
-		<!-- Main Content -->
-		<section :class="[
-			'w-full flex-1 space-y-7 p-4 sm:p-6 lg:p-8 ml-0 sm:ml-16 lg:ml-0 mb-30 sm:mb-0 overflow-y-auto transition-all duration-300',
-		]">
-			<div class="flex flex-col gap-3 sm:gap-auto sm:flex-row sm:items-center sm:justify-between">
-				<div class="flex items-center gap-4">
-					<button
-						class="p-3 bg-white hover:bg-gray-200 border border-gray-200 rounded-lg transition-colors cursor-pointer">
-						<ArrowLeft class="size-5" />
-					</button>
-					<h1 class="text-2xl font-medium">Настройка поиска</h1>
-				</div>
-				<a href="#"
-					class="text-blue-600 hover:text-blue-700 text-sm flex items-center gap-1 transition-colors relative after:bg-blue-700 after:absolute after:h-px after:w-0 after:-bottom-px after:left-0 hover:after:w-full after:transition-all after:duration-180 cursor-pointer">
-					Как найти больше вакансий?
-					<ExternalLink class="size-4" />
-				</a>
+	<section :class="[
+		'w-full flex-1 space-y-7 p-4 sm:p-6 sm:pl-22 lg:p-8 mb-30 sm:mb-0 overflow-y-auto transition-all duration-300',
+	]">
+		<div class="flex flex-col gap-3 sm:gap-auto sm:flex-row sm:items-center sm:justify-between">
+			<div class="flex items-center gap-4">
+				<Button icon-only class="bg-white border border-gray-200">
+					<ArrowLeft class="size-5" />
+				</Button>
+				<h1 class="text-2xl font-medium">Настройка поиска</h1>
 			</div>
+			<a href="#"
+				class="text-blue-600 hover:text-blue-700 text-sm flex items-center gap-1 transition-colors relative after:bg-blue-700 after:absolute after:h-px after:w-0 after:-bottom-px after:left-0 hover:after:w-full after:transition-all after:duration-180 cursor-pointer">
+				Как найти больше вакансий?
+				<ExternalLink class="size-4" />
+			</a>
+		</div>
 
-			<div class="flex flex-row-reverse justify-between gap-6 bg-white p-6 rounded-xl border border-gray-200">
+		<div class="flex flex-row-reverse justify-between gap-6 bg-white p-6 rounded-xl border border-gray-200">
+			<SavePanel :isSaving="isSaving" :saveSucceeded="saveSucceeded" :isCounting="isLoading"
+				:vacancyCount="vacancyCount" :disabled="isPrefLoading" @save="handleSave" />
 
-				<!-- Блок для сохранения и счетчика -->
-				<div class="min-w-50 md:static md:mt-0 fixed left-0 sm:left-15 bottom-0 w-full sm:w-[calc(100%-3.75rem)] md:w-auto z-30 bg-white border-t border-gray-100 px-4 py-3 flex flex-col md:flex-col gap-3 md:rounded-none shadow-lg
-         md:border-t-0 md:shadow-none">
-					<button @click="handleSave"
-						class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-all flex items-center justify-center gap-2 cursor-pointer w-full">
-						<Save class="size-5" />
-						Сохранить
-					</button>
-					<div class="flex items-center justify-center gap-2 bg-gray-50 p-3 rounded-lg border border-gray-200 w-full">
-						<span class="text-sm">Найдено вакансий:</span>
-						<span class="inline-block min-w-9 relative">
-							<LoaderCircle v-if="isLoading" class="size-4 animate-spin text-blue-600 mx-auto" />
-							<span v-else class="text-sm font-medium text-blue-600 transition-all block text-center">
-								{{ vacancyCount || 9999 }}
-							</span>
-						</span>
+			<form v-if="!isPrefLoading" class="flex-1 grid gap-y-10 xl:gap-x-8 max-w-4xl">
+				<KeywordsInput v-model="keywords">
+					<template #below>
+						<SearchInToggles :inTitle="searchInTitle" :inDescription="searchInDescription"
+							@update:inTitle="(v: boolean) => searchInTitle = v"
+							@update:inDescription="(v: boolean) => searchInDescription = v" />
+					</template>
+				</KeywordsInput>
+
+				<ExcludeWordsInput v-model="excludeWords" />
+
+				<div class="flex flex-col gap-y-2 xl:flex-row">
+					<div class="xl:w-62">
+						<label class="block font-semibold text-lg">Отрасль компании</label>
 					</div>
+					<IndustriesField :selectedNames="industries" :selectedIds="selectedIndustryIds"
+						:countText="industriesCountText" :disabled="isPrefLoading"
+						@update:selectedNames="(v: string[]) => industries = v"
+						@update:selectedIds="(v: string[]) => selectedIndustryIds = v" @clear="clearIndustries" />
 				</div>
 
-				<!-- Form -->
-				<form class="flex-1 grid gap-y-10 xl:gap-x-8 max-w-4xl">
-					<!-- Ключевые слова -->
-					<div class="flex flex-col gap-y-4 xl:flex-row">
+				<ExperienceSelect v-model="experience" :options="experienceLevels" :labels="experienceLabels" />
+			</form>
 
-						<div class="xl:w-62">
-							<label class="block font-semibold text-lg">Ключевые слова <span class="text-red-500">*</span></label>
-							<p class="text-sm text-gray-500">Слова, которые нужно искать в&nbsp;вакансии</p>
-						</div>
-
-						<div class="flex-1">
-							<input v-model="keywords" type="text" placeholder="Ключевые слова, через запятую"
-								class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all outline-none" />
-							<p class="text-xs text-gray-400 mt-1">
-								например,
-								<span class="font-medium text-blue-500 underline underline-offset-2 decoration-dashed cursor-pointer">
-									специалист по тестированию
-								</span>
-							</p>
-
-
-							<!-- Искать -->
-							<div class="w-fit flex flex-col gap-2 mt-7">
-								<span class="block font-normal text-md mb-3">Искать</span>
-								<label class="flex items-center gap-3 cursor-pointer group">
-									<CheckboxRoot v-model:checked="searchInTitle"
-										class="size-5 border border-gray-200 rounded flex items-center justify-center data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600 transition-all">
-										<CheckboxIndicator>
-											<Check class="size-4 text-white" />
-										</CheckboxIndicator>
-									</CheckboxRoot>
-									<span class="group-hover:text-gray-900 transition-colors">в названии вакансии</span>
-								</label>
-								<label class="flex items-center gap-3 cursor-pointer group">
-									<CheckboxRoot v-model:checked="searchInDescription"
-										class="size-5 border border-gray-200 rounded flex items-center justify-center data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600 transition-all">
-										<CheckboxIndicator>
-											<Check class="size-4 text-white" />
-										</CheckboxIndicator>
-									</CheckboxRoot>
-									<span class="text-gray-700 group-hover:text-gray-900 transition-colors">в описании
-										вакансии</span>
-								</label>
+			<!-- Скелетон формы при загрузке -->
+			<div v-else class="flex-1 grid gap-y-10 xl:gap-x-8 max-w-4xl">
+				<div class="flex flex-col gap-y-4 xl:flex-row">
+					<div class="xl:w-62">
+						<div class="h-6 w-48 bg-gray-100 rounded animate-pulse"></div>
+						<div class="h-4 w-64 bg-gray-100 rounded mt-2 animate-pulse"></div>
+					</div>
+					<div class="flex-1">
+						<div class="h-12 w-full bg-gray-100 rounded-lg animate-pulse"></div>
+						<div class="mt-6 space-y-3">
+							<div class="flex items-center gap-3">
+								<div class="size-5 bg-gray-100 rounded animate-pulse"></div>
+								<div class="h-4 w-56 bg-gray-100 rounded animate-pulse"></div>
+							</div>
+							<div class="flex items-center gap-3">
+								<div class="size-5 bg-gray-100 rounded animate-pulse"></div>
+								<div class="h-4 w-64 bg-gray-100 rounded animate-pulse"></div>
 							</div>
 						</div>
 					</div>
+				</div>
 
-					<!-- Исключить слова -->
-					<div class="flex flex-col gap-y-4 xl:flex-row">
-						<div class="xl:w-62">
-							<label class="block font-semibold text-lg">Исключить слова</label>
-							<p class="text-sm text-gray-500">Убрать вакансии со словами</p>
-						</div>
-						<div class="flex-1">
-							<input v-model="excludeWords" type="text" placeholder="Исключить слова, через запятую"
-								class="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all outline-none" />
-						</div>
+				<div class="flex flex-col gap-y-4 xl:flex-row">
+					<div class="xl:w-62">
+						<div class="h-6 w-40 bg-gray-100 rounded animate-pulse"></div>
+						<div class="h-4 w-56 bg-gray-100 rounded mt-2 animate-pulse"></div>
 					</div>
+					<div class="flex-1">
+						<div class="h-12 w-full bg-gray-100 rounded-lg animate-pulse"></div>
+					</div>
+				</div>
 
-					<!-- Отрасль компании -->
-					<div class="flex flex-col gap-y-2 xl:flex-row">
-						<div class="xl:w-62">
-							<label class="block font-semibold text-lg">Отрасль компании</label>
-						</div>
-						<div class="flex-1 flex flex-col gap-2">
-							<div class="flex items-center gap-2 mb-4">
-								<span class="text-sm text-gray-500">Вы выбрали</span>
-								<span
-									class="text-sm font-medium text-blue-500 underline underline-offset-2 decoration-dashed cursor-pointer">{{
-										industries.length }} отраслей</span>
-								<button type="button"
-									class="text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-full p-1 transition-colors cursor-pointer">
-									<X class="size-3" />
-								</button>
-							</div>
-							<div class="flex flex-wrap gap-2 mb-4">
-								<TransitionGroup name="tag">
-									<span v-for="(industry, index) in industries" :key="industry"
-										class="inline-flex items-center gap-2 p-2 pl-3 bg-gray-100 rounded-lg text-sm">
-										{{ industry }}
-										<button type="button" @click="removeIndustry(index)"
-											class="bg-gray-200 hover:bg-gray-300 rounded-full p-1 transition-colors cursor-pointer">
-											<X class="size-3" />
-										</button>
-									</span>
-								</TransitionGroup>
-							</div>
-							<button
-								class="w-fit text-blue-500 hover:text-blue-700 text-md font-medium transition-colors cursor-pointer">
-								Изменить отрасли
-							</button>
-						</div>
+				<div class="flex flex-col gap-y-2 xl:flex-row">
+					<div class="xl:w-62">
+						<div class="h-6 w-44 bg-gray-100 rounded animate-pulse"></div>
 					</div>
+					<div class="flex-1 flex flex-col gap-2">
+						<div class="flex items-center gap-2 mb-4">
+							<div class="h-4 w-24 bg-gray-100 rounded animate-pulse"></div>
+							<div class="h-4 w-16 bg-gray-100 rounded animate-pulse"></div>
+							<div class="size-5 bg-gray-100 rounded-full animate-pulse"></div>
+						</div>
+						<div class="flex gap-2">
+							<div class="h-8 w-24 bg-gray-100 rounded-lg animate-pulse"></div>
+							<div class="h-8 w-28 bg-gray-100 rounded-lg animate-pulse"></div>
+							<div class="h-8 w-20 bg-gray-100 rounded-lg animate-pulse"></div>
+						</div>
+						<div class="h-5 w-32 bg-gray-100 rounded mt-3 animate-pulse"></div>
+					</div>
+				</div>
 
-					<!-- Опыт работы -->
-					<div class="flex flex-col gap-y-2 xl:flex-row">
-						<div class="xl:w-62">
-							<label class="block font-semibold text-lg mb-1">Опыт работы</label>
-						</div>
-						<div class="flex-1">
-							<SelectRoot v-model="experience">
-								<SelectTrigger
-									class="w-full px-4 py-3 border border-gray-200 rounded-lg text-left flex items-center justify-between hover:border-gray-400 transition-all outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white cursor-pointer">
-									<SelectValue :placeholder="experience ? '' : 'Выберите уровень опыта'" />
-									<SelectIcon>
-										<ChevronDown class="size-4 text-gray-500" />
-									</SelectIcon>
-								</SelectTrigger>
-								<SelectPortal>
-									<Transition name="fade">
-										<SelectContent v-if="experienceOptions.length" position="popper" :side-offset="5"
-											class="w-full min-w-full bg-white rounded-lg shadow-lg border border-gray-200">
-											<SelectViewport class="p-1">
-												<SelectGroup>
-													<SelectItem v-for="option in experienceOptions" :key="option" :value="option"
-														class="relative flex items-center px-8 py-2.5 rounded-md text-sm outline-none cursor-pointer select-none data-highlighted:bg-blue-50 data-highlighted:text-blue-900 data-[state=checked]:font-medium transition-colors">
-														<SelectItemText>{{ option }}</SelectItemText>
-													</SelectItem>
-												</SelectGroup>
-											</SelectViewport>
-										</SelectContent>
-									</Transition>
-								</SelectPortal>
-							</SelectRoot>
-						</div>
+				<div class="flex flex-col gap-y-2 xl:flex-row">
+					<div class="xl:w-62">
+						<div class="h-6 w-36 bg-gray-100 rounded animate-pulse"></div>
 					</div>
-				</form>
+					<div class="flex-1">
+						<div class="h-12 w-full bg-gray-100 rounded-lg animate-pulse"></div>
+					</div>
+				</div>
 			</div>
-		</section>
-	</div>
+		</div>
+	</section>
 </template>
 
 <style scoped>
@@ -304,7 +244,6 @@ const handleSave = () => {
 		opacity: 1;
 		max-width: 128px;
 		margin-left: 0.5rem;
-		/* ml-2 */
 	}
 }
 </style>

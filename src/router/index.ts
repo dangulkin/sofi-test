@@ -1,16 +1,54 @@
 import { createRouter, createWebHistory } from 'vue-router'
-// import HomeView from '../views/HomeView.vue'
+import DashboardView from '@/views/DashboardView.vue'
 import SearchSettings from '@/views/SearchSettings.vue'
+import LoginView from '@/views/LoginView.vue'
+import DefaultLayout from '@/layouts/DefaultLayout.vue'
+import { validateAuth } from '@/api/auth'
 
 const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
-  routes: [
-    {
-      path: '/',
-      name: 'settings',
-      component: SearchSettings,
-    },
-  ],
+	history: createWebHistory(import.meta.env.BASE_URL),
+	routes: [
+		{
+			path: '/login',
+			name: 'login',
+			component: LoginView,
+			meta: { requiresAuth: false }
+		},
+		{
+			path: '/',
+			name: 'dashboard',
+			component: DashboardView,
+			meta: { layout: DefaultLayout, requiresAuth: true }
+		},
+		{
+			path: '/search-settings',
+			name: 'search-settings',
+			component: SearchSettings,
+			meta: { layout: DefaultLayout, requiresAuth: true }
+		},
+	],
+})
+
+// Navigation guard для проверки авторизации
+router.beforeEach(async (to, from, next) => {
+	const requiresAuth = to.meta.requiresAuth !== false
+
+	if (!requiresAuth) {
+		next()
+		return
+	}
+
+	try {
+		await validateAuth()
+		next()
+	} catch {
+		// Если не авторизован и не на странице логина - редирект на логин
+		if (to.name !== 'login') {
+			next({ name: 'login' })
+		} else {
+			next()
+		}
+	}
 })
 
 export default router

@@ -1,2 +1,5 @@
 export { default as HeaderBar } from './HeaderBar.vue'
 export { default as SideBar } from './SideBar.vue'
+export { default as UserProfile } from './UserProfile.vue'
+export { default as Button } from './ui/UIButton.vue'
+export { default as Checkbox } from './ui/UICheckbox.vue'
