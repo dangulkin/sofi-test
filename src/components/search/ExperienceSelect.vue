@@ -68,7 +68,7 @@ watchEffect(() => {
 				</ComboboxAnchor>
 				<ComboboxPortal>
 					<ComboboxContent v-if="props.options.length" position="popper" align="start" :side-offset="5"
-						class="w-full min-w-full bg-white rounded-xl shadow-lg border border-gray-200 text-left origin-top-left">
+						class="w-full min-w-full bg-white rounded-xl shadow-lg border border-gray-200 text-left origin-top-left z-30!">
 						<ComboboxViewport class="p-1">
 							<ComboboxGroup>
 								<ComboboxItem v-for="level in props.options" :key="level" :value="level"

@@ -8,6 +8,12 @@
   status = 200
   force = true
 
+# SPA fallback: все остальные запросы отправляем на index.html для Vue Router
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
 [[headers]]
   for = "/*"
   [headers.values]

@@ -33,9 +33,9 @@ onUnmounted(() => {
 
 <template>
 	<aside :class="[
-		'flex flex-col h-[calc(100vh-90px)] py-8 bg-white border-r border-gray-200 transition-all duration-300 overflow-clip',
+		'flex flex-col h-[calc(100dvh-90px)] py-8 pb-safe bg-white border-r border-gray-200 transition-all duration-300 overflow-clip',
 		// Мобильные (< sm): скрыт за бургером, при открытии — полный оверлей на всю ширину
-		'fixed top-[90px] left-0 z-40',
+		'fixed top-[90px] left-0 z-50',
 		props.isMobileOpen ? 'translate-x-0 w-full px-4 sm:w-64' : '-translate-x-full sm:translate-x-0',
 		// Планшеты (sm - lg): компактный вид по умолчанию, можно раскрыть поверх
 		'sm:w-16 sm:px-2',

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue';
+import { useRouter } from 'vue-router';
 import { getExperiences, type ExperienceLevel, type VacancySearchParams } from '@/api/positions';
 import { Button } from '@/components';
 import { pluralizeRu } from '@/lib/utils'
@@ -15,6 +16,7 @@ import { useVacancyCount } from '@/composables/useVacancyCount'
 
 import { ExternalLink, ArrowLeft } from 'lucide-vue-next';
 
+const router = useRouter();
 const experienceLevels = ref<ExperienceLevel[]>([]);
 
 // TODO: заменить на параметр из роута
@@ -86,11 +88,11 @@ async function handleSave() {
 
 <template>
 	<section :class="[
-		'w-full flex-1 space-y-7 p-4 sm:p-6 sm:pl-22 lg:p-8 mb-32 sm:mb-0 overflow-y-auto transition-all duration-300',
+		'w-full flex-1 space-y-7 p-3 sm:p-6 sm:pl-22 lg:p-8 mb-32 sm:mb-0 overflow-y-auto transition-all duration-300',
 	]">
 		<div class="flex flex-col gap-3 sm:gap-auto sm:flex-row sm:items-center sm:justify-between">
 			<div class="flex items-center gap-4">
-				<Button icon-only class="bg-white border border-gray-200">
+				<Button icon-only class="bg-white border border-gray-200" @click="router.back()">
 					<ArrowLeft class="size-5" />
 				</Button>
 				<h1 class="text-2xl font-semibold">Настройка поиска</h1>
@@ -102,7 +104,7 @@ async function handleSave() {
 			</a>
 		</div>
 
-		<div class="flex flex-row-reverse justify-between gap-6 bg-white p-6 xl:p-10 rounded-xl border border-gray-200">
+		<div class="flex flex-row-reverse justify-between gap-6 bg-white p-4 sm:p-6 xl:p-10 rounded-xl border border-gray-200">
 			<SavePanel :isSaving="isSaving" :saveSucceeded="saveSucceeded" :isCounting="isLoading"
 				:vacancyCount="vacancyCount" :disabled="isPrefLoading" @save="handleSave" />
 
