@@ -86,7 +86,7 @@ async function handleSave() {
 
 <template>
 	<section :class="[
-		'w-full flex-1 space-y-7 p-4 sm:p-6 sm:pl-22 lg:p-8 mb-30 sm:mb-0 overflow-y-auto transition-all duration-300',
+		'w-full flex-1 space-y-7 p-4 sm:p-6 sm:pl-22 lg:p-8 mb-32 sm:mb-0 overflow-y-auto transition-all duration-300',
 	]">
 		<div class="flex flex-col gap-3 sm:gap-auto sm:flex-row sm:items-center sm:justify-between">
 			<div class="flex items-center gap-4">

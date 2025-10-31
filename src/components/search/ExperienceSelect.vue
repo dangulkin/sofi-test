@@ -55,12 +55,12 @@ watchEffect(() => {
 							</template>
 							<span v-else class="text-sm text-gray-500 pl-2">Выберите уровень опыта</span>
 						</div>
-						<ComboboxInput
-							class="absolute inset-0 opacity-0 w-full h-full border-none outline-none pointer-events-auto" />
+						<ComboboxInput readonly inputmode="none"
+							class="absolute inset-0 opacity-0 w-full h-full border-none outline-none pointer-events-none" />
 						<div
 							class="absolute right-0 top-0 bottom-0 w-24 pointer-events-none bg-linear-to-l from-gray-50 from-33% via-gray-50/80 via-50% to-transparent z-20">
 						</div>
-						<ComboboxTrigger class="p-2 pr-0 absolute right-2 top-1/2 -translate-y-1/2 z-30 cursor-pointer!">
+						<ComboboxTrigger class="p-2 pr-0 absolute right-2 top-1/2 -translate-y-1/2 z-20 cursor-pointer!">
 							<ChevronDown class="size-5" />
 						</ComboboxTrigger>
 						<ComboboxCancel />
