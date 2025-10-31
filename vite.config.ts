@@ -22,6 +22,21 @@ export default defineConfig({
 				changeOrigin: true,
 				secure: false,
 				cookieDomainRewrite: 'localhost',
+				cookiePathRewrite: '/',
+				configure: (proxy) => {
+					proxy.on('proxyRes', (proxyRes) => {
+						//Set-Cookie заголовки для работы в Safari
+						const cookies = proxyRes.headers['set-cookie'];
+						if (cookies) {
+							proxyRes.headers['set-cookie'] = cookies.map(cookie => {
+								return cookie
+									.replace(/;\s*Secure/gi, '')
+									.replace(/;\s*SameSite=None/gi, '; SameSite=Lax')
+									.replace(/;\s*Domain=[^;]+/gi, '');
+							});
+						}
+					});
+				},
 			},
 		},
 	},

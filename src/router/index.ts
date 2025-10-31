@@ -62,6 +62,7 @@ router.beforeEach(async (to, from, next) => {
 	const requiresAuth = to.meta.requiresAuth !== false
 
 	if (!requiresAuth) {
+		// Страница не требует авторизации (например, /login)
 		next()
 		return
 	}
@@ -70,12 +71,8 @@ router.beforeEach(async (to, from, next) => {
 		await validateAuth()
 		next()
 	} catch {
-		// Если не авторизован и не на странице логина - редирект на логин
-		if (to.name !== 'login') {
-			next({ name: 'login' })
-		} else {
-			next()
-		}
+		// Если не авторизован - редирект на логин
+		next({ name: 'login' })
 	}
 })
 

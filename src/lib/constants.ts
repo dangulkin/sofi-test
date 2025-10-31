@@ -1,6 +1,6 @@
 import type { ExperienceLevel } from '@/api/positions'
 
-// Common specializations used to query vacancies
+// Общие специализации для запросов вакансий
 export const SPECIALIZATIONS: readonly string[] = [
 	'1170019', // HTMLCSS
 	'1170020', // HTMLCSS JS
@@ -11,7 +11,7 @@ export const SPECIALIZATIONS: readonly string[] = [
 	'1210004', // UX
 ] as const
 
-// Human-friendly labels for experience levels
+// Понятные метки для уровней опыта
 export const EXPERIENCE_LABELS: Record<ExperienceLevel, string> = {
 	noExperience: 'Нет опыта',
 	between1And3: '1-3 года',

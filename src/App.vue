@@ -3,9 +3,10 @@ import { RouterView, useRoute } from 'vue-router';
 import { computed } from 'vue';
 import { useAuthSession } from '@/composables/useAuthSession';
 
-// Start auth session keep-alive when app mounts
-const { setup: setupAuth } = useAuthSession();
-setupAuth();
+// Запускаем keep-alive для auth сессии при монтировании
+const { setup } = useAuthSession()
+setup()
+
 
 const route = useRoute();
 const layout = computed(() => route.meta.layout);

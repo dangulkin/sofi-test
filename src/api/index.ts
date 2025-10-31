@@ -1,16 +1,12 @@
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://test.sofi-assistant.com'
-const isDev = import.meta.env.DEV
 
-// В dev используем прокси Vite (/api), в production - прямые запросы к API
+
+// В dev используем прокси Vite (/api), в production - Netlify redirects (/api)
 export function getApiUrl(path: string): string {
-	if (isDev) {
-		// Локальная разработка - используем Vite proxy
-		return path
-	}
-	// Production - убираем /api и добавляем базовый URL
-	const pathWithoutApi = path.startsWith('/api') ? path.substring(4) : path
-	return `${API_BASE_URL}${pathWithoutApi}`
+	// И в dev, и в production используем /api
+	// Dev: Vite proxy перенаправляет на test.sofi-assistant.com
+	// Production: Netlify redirects перенаправляет на test.sofi-assistant.com
+	return path
 }
 
 export async function apiRequest<T>(path: string, options: RequestInit = {}): Promise<T> {

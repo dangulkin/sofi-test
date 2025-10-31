@@ -1,10 +1,8 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useRouter } from 'vue-router'
 import { login } from '@/api/auth'
 import { Button } from '@/components'
 
-const router = useRouter()
 const username = ref('')
 const password = ref('')
 const error = ref<string | null>(null)
@@ -15,9 +13,17 @@ async function handleLogin() {
 	isLoading.value = true
 
 	try {
-		await login({ username: username.value, password: password.value })
-		router.push('/')
+		const result = await login({ username: username.value, password: password.value })
+		console.log('Login successful:', result)
+
+		// Для Safari: делаем небольшую задержку, чтобы cookies успели сохраниться
+		await new Promise(resolve => setTimeout(resolve, 100))
+
+		// Используем window.location вместо router.push для полной перезагрузки
+		// Это помогает Safari корректно применить cookies
+		window.location.href = '/'
 	} catch (err) {
+		console.error('Login error:', err)
 		error.value = err instanceof Error ? err.message : 'Ошибка входа'
 	} finally {
 		isLoading.value = false
@@ -29,7 +35,9 @@ async function handleLogin() {
 	<div class="min-h-screen flex items-center justify-center bg-gray-50 p-4">
 		<div class="w-full max-w-md">
 			<div class="bg-white rounded-xl shadow-lg p-8 border border-gray-200">
-				<h1 class="text-2xl font-bold text-center mb-2">Sofi AI</h1>
+				<div class="flex justify-center mb-6">
+					<img src="@/assets/logo.svg" alt="Sofi AI" class="h-8" />
+				</div>
 				<p class="text-gray-600 text-center mb-8">Вход в систему</p>
 
 				<form @submit.prevent="handleLogin" class="space-y-4">

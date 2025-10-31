@@ -1,59 +1,54 @@
 import { onMounted, onUnmounted } from 'vue'
 import { validateAuth, login } from '@/api/auth'
 
-// Simple auth session manager: validates on start and keeps session alive.
+// Менеджер auth сессии: валидация при старте и поддержка сессии активной
 export function useAuthSession() {
 	let intervalId: number | null = null
 
-	async function ensureAuth() {
-		// Try validate
-		let valid = false
-		try {
-			const res = await validateAuth()
-			console.log('[auth] validate on start:', res)
-			valid = true
-		} catch (e) {
-			console.warn('[auth] initial validate failed:', e)
-		}
+	// Попытка переподключения в dev режиме
+	async function tryDevAutoLogin() {
+		if (!import.meta.env.DEV) return
 
-		// In dev, auto-login using env creds if not valid
-		if (!valid && import.meta.env.DEV) {
-			const username = import.meta.env.VITE_DEV_USERNAME
-			const password = import.meta.env.VITE_DEV_PASSWORD
-			if (username && password) {
-				try {
-					await login({ username, password })
-					console.log('[auth] dev auto-login success')
-					const res2 = await validateAuth()
-					console.log('[auth] validate after dev login:', res2)
-				} catch (e) {
-					console.error('[auth] dev auto-login failed:', e)
-				}
+		const username = import.meta.env.VITE_DEV_USERNAME
+		const password = import.meta.env.VITE_DEV_PASSWORD
+		if (username && password) {
+			try {
+				await login({ username, password })
+			} catch (err) {
+				console.error('[auth] dev auto-login failed:', err)
 			}
 		}
 	}
 
-	function startHeartbeat(ms = 10 * 60 * 1000) { // default 10 minutes
-		if (intervalId) return
-		intervalId = window.setInterval(async () => {
+	async function ensureAuth() {
+		// Пытаемся валидировать
+		let valid = false
+		try {
+			await validateAuth()
+			valid = true
+		} catch {
+			// Не авторизован
+		}
+
+		// В dev режиме авто-логин через env переменные
+		if (!valid) {
+			await tryDevAutoLogin()
 			try {
-				const res = await validateAuth()
-				console.debug('[auth] heartbeat validate:', res)
-			} catch (e) {
-				console.warn('[auth] heartbeat failed:', e)
-				// Optionally try dev auto-login to recover silently
-				if (import.meta.env.DEV) {
-					const username = import.meta.env.VITE_DEV_USERNAME
-					const password = import.meta.env.VITE_DEV_PASSWORD
-					if (username && password) {
-						try {
-							await login({ username, password })
-							console.log('[auth] heartbeat dev re-login success')
-						} catch (err) {
-							console.error('[auth] heartbeat dev re-login failed:', err)
-						}
-					}
-				}
+				await validateAuth()
+			} catch {
+				// Авторизация не удалась
+			}
+		}
+	}
+
+	function startHeartbeat(ms = 10 * 60 * 1000) { // по умолчанию 10 минут
+		if (intervalId) return
+		intervalId = setInterval(async () => {
+			try {
+				await validateAuth()
+			} catch {
+				// Пытаемся переподключиться через dev auto-login
+				await tryDevAutoLogin()
 			}
 		}, ms)
 	}
@@ -81,21 +76,8 @@ export function useAuthSession() {
 		if (document.visibilityState === 'visible') {
 			try {
 				await validateAuth()
-				console.debug('[auth] visibility validate ok')
-			} catch (e) {
-				console.warn('[auth] visibility validate failed:', e)
-				if (import.meta.env.DEV) {
-					const username = import.meta.env.VITE_DEV_USERNAME
-					const password = import.meta.env.VITE_DEV_PASSWORD
-					if (username && password) {
-						try {
-							await login({ username, password })
-							console.log('[auth] visibility dev re-login success')
-						} catch (err) {
-							console.error('[auth] visibility dev re-login failed:', err)
-						}
-					}
-				}
+			} catch {
+				await tryDevAutoLogin()
 			}
 		}
 	}

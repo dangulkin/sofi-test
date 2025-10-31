@@ -10,8 +10,8 @@ onMounted(async () => {
 	try {
 		await validateAuth();
 		isValid = true
-	} catch (err) {
-		console.warn('[auth] Ошибка валидации:', err)
+	} catch {
+		// Не авторизован
 	}
 
 	if (!isValid && DEV_LOGIN) {

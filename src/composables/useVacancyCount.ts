@@ -33,23 +33,23 @@ export function useVacancyCount(
 			const count = await getTotalVacancies(pid.value, currentParams())
 			vacancyCount.value = count
 		} catch (e) {
+			console.error('[useVacancyCount.fetch] Failed', e)
 			vacancyCount.value = null
 			error.value = 'Не удалось получить количество вакансий'
-			console.error('[useVacancyCount.fetch] Failed', e)
 		} finally {
 			isLoading.value = false
 		}
 	}
 
-	// Auto-fetch with debounce when params change
+	// Авто-обновление с debounce при изменении параметров
 	if (typeof paramsSource !== 'function') {
-		// If params is a Ref, watch it directly
+		// Если params это Ref, следим за ним напрямую
 		watch(paramsSource, () => {
 			if (timer) clearTimeout(timer)
 			timer = setTimeout(() => { fetch() }, debounceMs) as unknown as number
 		}, { deep: true })
 	} else if (opts.watchSource) {
-		// If params is a function, watch the provided watchSource
+		// Если params это функция, следим за переданным watchSource
 		const sources = Array.isArray(opts.watchSource) ? opts.watchSource : [opts.watchSource]
 		watch(sources, () => {
 			if (timer) clearTimeout(timer)
@@ -58,7 +58,7 @@ export function useVacancyCount(
 	}
 
 	if (opts.immediate) {
-		// trigger initial fetch
+		// Запускаем первоначальную загрузку
 		fetch()
 	}
 

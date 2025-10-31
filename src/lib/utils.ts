@@ -6,8 +6,8 @@ export function cn(...inputs: ClassValue[]) {
 	return twMerge(clsx(inputs))
 }
 
-// Russian pluralization helper
-// forms: [one, few, many] e.g. ['отрасль', 'отрасли', 'отраслей']
+// Хелпер для русской плюрализации
+// forms: [one, few, many] напр. ['отрасль', 'отрасли', 'отраслей']
 export function pluralizeRu(count: number, forms: [string, string, string]) {
 	const n = Math.abs(count) % 100
 	const n1 = n % 10

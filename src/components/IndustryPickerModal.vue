@@ -34,7 +34,7 @@ const nameById = computed<Record<string, string>>(() => {
 	return m
 })
 
-// Compute group selection state
+// Вычисляем состояние выбора группы
 function getGroupState(group: Industry): { checked: boolean; indeterminate: boolean } {
 	const groupIds = group.industries.map(s => s.id)
 	const selectedCount = groupIds.filter(id => selected.value.has(id)).length
@@ -55,9 +55,8 @@ async function ensureLoaded() {
 	try {
 		const data = await getIndustries()
 		groups.value = data
-		// Normalize unknown ids
+		// Удаляем неизвестные id
 		selected.value = new Set(Array.from(selected.value).filter(id => data.some(g => g.industries.some(s => s.id === id))))
-		console.log('[IndustryPickerModal] loaded groups:', data.length)
 	} catch (e) {
 		console.error('[IndustryPickerModal] load failed', e)
 		error.value = 'Не удалось загрузить отрасли'
@@ -73,7 +72,6 @@ function clear() {
 	selected.value = new Set();
 }
 function toggle(id: string, checked: boolean) {
-	console.log('[IndustryPickerModal] toggle', id, checked)
 	const next = new Set(selected.value)
 	if (checked) {
 		next.add(id)
@@ -81,7 +79,6 @@ function toggle(id: string, checked: boolean) {
 		next.delete(id)
 	}
 	selected.value = next
-	console.log('[IndustryPickerModal] selected size:', selected.value.size)
 }
 
 function toggleGroup(group: Industry, checked: boolean) {
@@ -89,15 +86,14 @@ function toggleGroup(group: Industry, checked: boolean) {
 	const groupIds = group.industries.map(s => s.id)
 
 	if (checked) {
-		// Add all industries from this group
+		// Добавляем все отрасли из этой группы
 		groupIds.forEach(id => next.add(id))
 	} else {
-		// Remove all industries from this group
+		// Удаляем все отрасли из этой группы
 		groupIds.forEach(id => next.delete(id))
 	}
 
 	selected.value = next
-	console.log('[IndustryPickerModal] toggled group', group.name, 'selected size:', selected.value.size)
 }
 
 function save() {

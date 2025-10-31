@@ -8,7 +8,7 @@ export interface UseSearchPreferencesState {
 	searchInDescription: Ref<boolean>
 	experience: Ref<ExperienceLevel[]>
 	selectedIndustryIds: Ref<string[]>
-	industries: Ref<string[]> // display names
+	industries: Ref<string[]> // отображаемые названия
 	isPrefLoading: Ref<boolean>
 	isSaving: Ref<boolean>
 	saveSucceeded: Ref<boolean | null>
@@ -44,8 +44,8 @@ export function useSearchPreferences(positionId: Ref<number> | number) {
 			industries.value = Array.isArray(prefs.industries) ? prefs.industries.map((i) => i.name) : []
 			experience.value = Array.isArray(prefs.experience) ? prefs.experience.filter(Boolean) as ExperienceLevel[] : []
 		} catch (e) {
-			error.value = 'Не удалось загрузить настройки'
 			console.error('[useSearchPreferences.load] Failed', e)
+			error.value = 'Не удалось загрузить настройки'
 		} finally {
 			isPrefLoading.value = false
 		}
@@ -75,9 +75,9 @@ export function useSearchPreferences(positionId: Ref<number> | number) {
 			await saveSearchPreferences(pid.value, preferences)
 			saveSucceeded.value = true
 		} catch (e) {
+			console.error('[useSearchPreferences.save] Failed', e)
 			saveSucceeded.value = false
 			error.value = 'Не удалось сохранить настройки'
-			console.error('[useSearchPreferences.save] Failed', e)
 		} finally {
 			isSaving.value = false
 			setTimeout(() => { saveSucceeded.value = null }, 2000)
@@ -85,7 +85,7 @@ export function useSearchPreferences(positionId: Ref<number> | number) {
 	}
 
 	return {
-		// state
+		// состояние
 		keywords,
 		excludeWords,
 		searchInTitle,
@@ -97,7 +97,7 @@ export function useSearchPreferences(positionId: Ref<number> | number) {
 		isSaving,
 		saveSucceeded,
 		error,
-		// actions
+		// действия
 		load,
 		save,
 	} as UseSearchPreferencesState & { load: () => Promise<void>; save: (extra?: Partial<Pick<SearchPreferences, 'specializations' | 'excluded_employer_ids'>>) => Promise<void> }

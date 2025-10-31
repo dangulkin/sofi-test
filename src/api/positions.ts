@@ -70,7 +70,7 @@ export interface TotalVacanciesResponse {
 	total: number
 }
 
-// GET preferences response types
+// Типы для ответа GET preferences
 export interface PreferenceSpecializationItem {
 	id: string
 	name: string

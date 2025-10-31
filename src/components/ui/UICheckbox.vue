@@ -13,15 +13,15 @@ const emit = defineEmits<{
 	(e: 'update:checked', value: boolean): void
 }>()
 
-// Two-way binding for Reka checkbox - use v-model (modelValue), not v-model:checked
+// Two-way binding для Reka checkbox - используем v-model (modelValue), не v-model:checked
 const model = computed<boolean | 'indeterminate'>({
 	get: () => {
 		if (props.indeterminate) return 'indeterminate'
 		return props.checked === true
 	},
 	set: (v) => {
-		// Emit true for checked, false for unchecked
-		// When clicking indeterminate, it becomes checked (true)
+		// Отправляем true для checked, false для unchecked
+		// При клике на indeterminate он становится checked (true)
 		if (v === 'indeterminate') {
 			emit('update:checked', true)
 		} else {
