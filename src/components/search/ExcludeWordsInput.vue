@@ -12,7 +12,7 @@ const emit = defineEmits<{ (e: 'update:modelValue', v: string): void }>()
 		<div class="flex-1">
 			<input :value="modelValue" @input="emit('update:modelValue', ($event.target as HTMLInputElement).value)"
 				type="text" placeholder="Исключить слова, через запятую"
-				class="w-full h-12 px-4 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all outline-none" />
+				class="w-full h-12 px-4 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all outline-none" />
 		</div>
 	</div>
 </template>

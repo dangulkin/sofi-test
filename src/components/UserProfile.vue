@@ -1,20 +1,13 @@
 <script setup lang="ts">
-import { UserRound } from 'lucide-vue-next'
+import { UserRound, ExternalLink, ChevronDown} from 'lucide-vue-next'
 import { computed } from 'vue'
 import { useUserInfo } from '@/composables/useUserInfo'
 import { AvatarRoot, AvatarFallback } from 'reka-ui'
+import { Button } from '@/components'
+
 
 const { user, loading } = useUserInfo()
 
-// Compute user initials for fallback
-const userInitials = computed(() => {
-	if (!user.value) return ''
-	const firstInitial = user.value.first_name?.[0]?.toUpperCase() || ''
-	const lastInitial = user.value.last_name?.[0]?.toUpperCase() || ''
-	return firstInitial + lastInitial
-})
-
-// Compute full name
 const fullName = computed(() => {
 	if (loading.value) return 'Загрузка…'
 	if (!user.value) return 'Гость'
@@ -27,21 +20,21 @@ const fullName = computed(() => {
 		<AvatarRoot class="relative flex size-10 shrink-0 overflow-hidden rounded-full">
 			<!-- <AvatarImage :src="user?.photo_url" :alt="fullName" /> -->
 			<AvatarFallback
-				class="flex size-full items-center justify-center rounded-full bg-gray-100 font-medium text-sm">
-				<span v-if="userInitials">{{ userInitials }}</span>
-				<UserRound v-else class="size-5 shrink-0" />
+				class="flex size-full items-center justify-center bg-gray-100 font-medium text-sm">
+				<UserRound class="size-5 shrink-0" />
 			</AvatarFallback>
 		</AvatarRoot>
 		<div class="text-left">
 			<div class="text-md font-medium">
 				{{ fullName }}
 			</div>
-			<div class="text-xs text-gray-500 mt-1 underline hover:no-underline cursor-pointer">
+			<a href="https://hh.ru/" target="_blank" class="flex items-center gap-1 text-xs text-gray-500 mt-1 underline hover:no-underline cursor-pointer">
 				<span>Аккаунт hh.ru</span>
-			</div>
+				<ExternalLink class="size-3" />
+			</a>
 		</div>
-		<!-- <Button variant="flat" icon-only>
+		<Button variant="flat" icon-only class="cursor-pointer">
 			<ChevronDown class="size-5 shrink-0" />
-		</Button> -->
+		</Button>
 	</div>
 </template>

@@ -30,7 +30,7 @@ const emit = defineEmits<{ (e: 'save'): void }>()
 				Сохранить
 			</template>
 		</Button>
-		<div class="flex items-center justify-center gap-2 bg-gray-50 p-3 rounded-lg border border-gray-200 w-full">
+		<div class="flex items-center justify-center gap-2 bg-gray-50 p-3 rounded-xl border border-gray-200 w-full">
 			<span class="text-sm">Найдено вакансий:</span>
 			<span class="inline-block min-w-9 relative">
 				<LoaderCircle v-if="props.isCounting" class="size-4 animate-spin text-blue-600 mx-auto" />

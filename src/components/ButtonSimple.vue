@@ -22,7 +22,7 @@ const props = withDefaults(defineProps<ButtonProps>(), {
 
 const buttonClasses = computed(() => {
 	const classes: string[] = [
-		'inline-flex items-center justify-center gap-3 font-medium rounded-lg transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed',
+		'inline-flex items-center justify-center gap-3 font-medium rounded-xl transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed',
 	];
 
 	// Размеры с фиксированной высотой

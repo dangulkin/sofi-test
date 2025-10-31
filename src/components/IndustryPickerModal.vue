@@ -147,7 +147,7 @@ function save() {
 					</div>
 
 					<div
-						class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 px-5 py-4 bg-gray-50 border-t border-gray-200">
+						class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 px-5 py-4 border-t border-gray-200">
 						<div class="text-sm text-gray-600">Выбрано: <span class="font-medium">{{ selected.size }}</span></div>
 						<div class="flex items-center gap-2 flex-wrap sm:flex-nowrap">
 							<Button size="sm" color="danger" variant="flat" @click="clear" class="flex-1">Очистить</Button>

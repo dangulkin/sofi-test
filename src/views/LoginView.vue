@@ -16,7 +16,6 @@ async function handleLogin() {
 
 	try {
 		await login({ username: username.value, password: password.value })
-		// Перенаправить на главную после успешного входа
 		router.push('/')
 	} catch (err) {
 		error.value = err instanceof Error ? err.message : 'Ошибка входа'
@@ -39,7 +38,7 @@ async function handleLogin() {
 							Имя пользователя
 						</label>
 						<input id="username" v-model="username" type="text" required
-							class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+							class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
 							placeholder="Введите имя пользователя" />
 					</div>
 
@@ -48,11 +47,11 @@ async function handleLogin() {
 							Пароль
 						</label>
 						<input id="password" v-model="password" type="password" required
-							class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+							class="w-full px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
 							placeholder="Введите пароль" />
 					</div>
 
-					<div v-if="error" class="p-3 bg-red-50 border border-red-200 rounded-lg">
+					<div v-if="error" class="p-3 bg-red-50 border border-red-200 rounded-xl">
 						<p class="text-sm text-red-600">{{ error }}</p>
 					</div>
 

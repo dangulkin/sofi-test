@@ -17,7 +17,7 @@ const slots = useSlots()
 		<div class="flex-1">
 			<input :value="modelValue" @input="emit('update:modelValue', ($event.target as HTMLInputElement).value)"
 				type="text" placeholder="Ключевые слова, через запятую"
-				class="w-full h-12 px-4 bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all outline-none" />
+				class="w-full h-12 px-4 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all outline-none" />
 			<p class="text-xs text-gray-400 mt-1">
 				например,
 				<span @click="emit('update:modelValue', 'специалист по тестированию')"
@@ -25,7 +25,7 @@ const slots = useSlots()
 					специалист по тестированию
 				</span>
 			</p>
-			<div v-if="slots.below" class="mt-3">
+			<div v-if="slots.below" class="mt-7">
 				<slot name="below" />
 			</div>
 		</div>

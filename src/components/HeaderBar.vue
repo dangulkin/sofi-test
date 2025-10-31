@@ -24,7 +24,7 @@ const emit = defineEmits(['toggle-mobile-menu']);
 				<Bell class="size-5" />
 				<span class="absolute top-2 right-3 size-3 bg-blue-600 border-2 border-white rounded-full"></span>
 			</Button>
-			<UserProfile name="Андрей Луцкевич" account-type="Аккаунт HH.ru" class="hidden sm:flex" />
+			<UserProfile name="Андрей Луцкевич" class="hidden sm:flex" />
 
 			<!-- Для мобилки -->
 			<Button @click="emit('toggle-mobile-menu')" icon-only class="sm:hidden">

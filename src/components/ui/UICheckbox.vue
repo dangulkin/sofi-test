@@ -32,7 +32,7 @@ const model = computed<boolean | 'indeterminate'>({
 </script>
 
 <template>
-	<label class="flex items-start gap-3 p-2 rounded-lg hover:bg-gray-50 cursor-pointer min-w-0"
+	<label class="flex items-start gap-3 p-2 rounded-xl hover:bg-gray-50 cursor-pointer min-w-0"
 		:class="{ 'opacity-60 cursor-not-allowed': props.disabled }">
 		<CheckboxRoot v-model="model" :disabled="props.disabled"
 			class="shrink-0 size-5 border border-gray-300 rounded flex items-center justify-center data-[state=checked]:bg-blue-600 data-[state=checked]:border-blue-600 data-[state=indeterminate]:bg-blue-600 data-[state=indeterminate]:border-blue-600 transition-all">

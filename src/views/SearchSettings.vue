@@ -93,7 +93,7 @@ async function handleSave() {
 				<Button icon-only class="bg-white border border-gray-200">
 					<ArrowLeft class="size-5" />
 				</Button>
-				<h1 class="text-2xl font-medium">Настройка поиска</h1>
+				<h1 class="text-2xl font-semibold">Настройка поиска</h1>
 			</div>
 			<a href="#"
 				class="text-blue-600 hover:text-blue-700 text-sm flex items-center gap-1 transition-colors relative after:bg-blue-700 after:absolute after:h-px after:w-0 after:-bottom-px after:left-0 hover:after:w-full after:transition-all after:duration-180 cursor-pointer">
@@ -102,7 +102,7 @@ async function handleSave() {
 			</a>
 		</div>
 
-		<div class="flex flex-row-reverse justify-between gap-6 bg-white p-6 rounded-xl border border-gray-200">
+		<div class="flex flex-row-reverse justify-between gap-6 bg-white p-6 xl:p-10 rounded-xl border border-gray-200">
 			<SavePanel :isSaving="isSaving" :saveSucceeded="saveSucceeded" :isCounting="isLoading"
 				:vacancyCount="vacancyCount" :disabled="isPrefLoading" @save="handleSave" />
 
@@ -135,10 +135,10 @@ async function handleSave() {
 				<div class="flex flex-col gap-y-4 xl:flex-row">
 					<div class="xl:w-62">
 						<div class="h-6 w-48 bg-gray-100 rounded animate-pulse"></div>
-						<div class="h-4 w-64 bg-gray-100 rounded mt-2 animate-pulse"></div>
+						<div class="h-4 w-56 bg-gray-100 rounded mt-2 animate-pulse"></div>
 					</div>
 					<div class="flex-1">
-						<div class="h-12 w-full bg-gray-100 rounded-lg animate-pulse"></div>
+						<div class="h-12 w-full bg-gray-100 rounded-xl animate-pulse"></div>
 						<div class="mt-6 space-y-3">
 							<div class="flex items-center gap-3">
 								<div class="size-5 bg-gray-100 rounded animate-pulse"></div>
@@ -158,7 +158,7 @@ async function handleSave() {
 						<div class="h-4 w-56 bg-gray-100 rounded mt-2 animate-pulse"></div>
 					</div>
 					<div class="flex-1">
-						<div class="h-12 w-full bg-gray-100 rounded-lg animate-pulse"></div>
+						<div class="h-12 w-full bg-gray-100 rounded-xl animate-pulse"></div>
 					</div>
 				</div>
 
@@ -173,9 +173,9 @@ async function handleSave() {
 							<div class="size-5 bg-gray-100 rounded-full animate-pulse"></div>
 						</div>
 						<div class="flex gap-2">
-							<div class="h-8 w-24 bg-gray-100 rounded-lg animate-pulse"></div>
-							<div class="h-8 w-28 bg-gray-100 rounded-lg animate-pulse"></div>
-							<div class="h-8 w-20 bg-gray-100 rounded-lg animate-pulse"></div>
+							<div class="h-8 w-24 bg-gray-100 rounded-xl animate-pulse"></div>
+							<div class="h-8 w-28 bg-gray-100 rounded-xl animate-pulse"></div>
+							<div class="h-8 w-20 bg-gray-100 rounded-xl animate-pulse"></div>
 						</div>
 						<div class="h-5 w-32 bg-gray-100 rounded mt-3 animate-pulse"></div>
 					</div>
@@ -186,7 +186,7 @@ async function handleSave() {
 						<div class="h-6 w-36 bg-gray-100 rounded animate-pulse"></div>
 					</div>
 					<div class="flex-1">
-						<div class="h-12 w-full bg-gray-100 rounded-lg animate-pulse"></div>
+						<div class="h-12 w-full bg-gray-100 rounded-xl animate-pulse"></div>
 					</div>
 				</div>
 			</div>

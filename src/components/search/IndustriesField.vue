@@ -42,7 +42,7 @@ function onSave(payload: { selectedIds: string[], selectedNames: string[] }) {
 		<FadeOverflow v-if="selectedNames.length" :max-height="400" class="mb-4">
 			<div class="flex flex-wrap gap-2">
 				<span v-for="(industry, index) in selectedNames" :key="industry"
-					class="inline-flex items-center gap-2 p-2 pl-3 bg-gray-100 rounded-lg text-sm">
+					class="inline-flex items-center gap-2 p-2 pl-3 bg-gray-100 rounded-xl text-sm">
 					{{ industry }}
 					<button type="button" @click="
 						emit('update:selectedNames', selectedNames.filter((_, i) => i !== index));
@@ -54,7 +54,7 @@ function onSave(payload: { selectedIds: string[], selectedNames: string[] }) {
 			</div>
 		</FadeOverflow>
 
-		<button type="button" @click="open" :disabled="disabled"
+		<button type="button" @click="open" :disabled
 			class="w-fit text-blue-500 hover:text-blue-700 text-md font-medium transition-colors cursor-pointer">
 			Изменить отрасли
 		</button>

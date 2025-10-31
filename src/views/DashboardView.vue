@@ -37,7 +37,7 @@ onMounted(async () => {
 </script>
 <template>
 	<div class="p-8 sm:ml-16 lg:ml-0">
-		<h1 class="text-3xl font-bold">Дашборд</h1>
-		<p class="mt-4 text-gray-600">Добро пожаловать в панель управления</p>
+		<h1 class="text-2xl font-semibold">Дашборд</h1>
+		<p class="mt-4 text-gray-600">Вэлкам!</p>
 	</div>
 </template>

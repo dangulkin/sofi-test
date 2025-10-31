@@ -71,43 +71,55 @@ onUnmounted(() => {
 						:class="['sidebar-label', (props.collapsed && !props.isMobileOpen) && 'opacity-0 max-w-0 ml-0']">Позиции</span>
 				</Button>
 			</RouterLink>
-			<Button variant="flat" href="#" tag="a"
-				:class="['justify-start', (props.collapsed && !props.isMobileOpen) && 'px-3.5! w-12! justify-center']">
-				<template #icon-before>
-					<FileInput class="size-5 shrink-0" />
-				</template>
-				<span
-					:class="['sidebar-label', (props.collapsed && !props.isMobileOpen) && 'opacity-0 max-w-0 ml-0']">Отклики</span>
-			</Button>
-			<Button variant="flat" href="#" tag="a"
-				:class="['justify-start', (props.collapsed && !props.isMobileOpen) && 'px-3.5! w-12! justify-center']">
-				<template #icon-before>
-					<CreditCard class="size-5 shrink-0" />
-				</template>
-				<span
-					:class="['sidebar-label', (props.collapsed && !props.isMobileOpen) && 'opacity-0 max-w-0 ml-0']">Подписка</span>
-			</Button>
-			<Button variant="flat" href="#" tag="a"
-				:class="['justify-start', (props.collapsed && !props.isMobileOpen) && 'px-3.5! w-12! justify-center']">
-				<template #icon-before>
-					<Mic class="size-5 shrink-0" />
-				</template>
-				<span
-					:class="['sidebar-label', (props.collapsed && !props.isMobileOpen) && 'opacity-0 max-w-0 ml-0']">Интервью</span>
-			</Button>
-			<Button variant="flat" href="#" tag="a"
-				:class="['justify-start', (props.collapsed && !props.isMobileOpen) && 'px-3.5! w-12! justify-center']">
-				<template #icon-before>
-					<Briefcase class="size-5 shrink-0" />
-				</template>
-				<span
-					:class="['sidebar-label', (props.collapsed && !props.isMobileOpen) && 'opacity-0 max-w-0 ml-0']">Вакансии</span>
-			</Button>
+			<RouterLink to="/responses" custom v-slot="{ isExactActive, href, navigate }">
+				<Button :variant="isExactActive ? 'light' : 'flat'" :color="isExactActive ? 'primary' : 'default'" :href="href"
+					@click="navigate" tag="a"
+					:class="['justify-start', isExactActive && 'font-medium', (props.collapsed && !props.isMobileOpen) && 'px-3.5! w-12! justify-center']">
+					<template #icon-before>
+						<FileInput class="size-5 shrink-0" />
+					</template>
+					<span
+						:class="['sidebar-label', (props.collapsed && !props.isMobileOpen) && 'opacity-0 max-w-0 ml-0']">Отклики</span>
+				</Button>
+			</RouterLink>
+			<RouterLink to="/subscription" custom v-slot="{ isExactActive, href, navigate }">
+				<Button :variant="isExactActive ? 'light' : 'flat'" :color="isExactActive ? 'primary' : 'default'" :href="href"
+					@click="navigate" tag="a"
+					:class="['justify-start', isExactActive && 'font-medium', (props.collapsed && !props.isMobileOpen) && 'px-3.5! w-12! justify-center']">
+					<template #icon-before>
+						<CreditCard class="size-5 shrink-0" />
+					</template>
+					<span
+						:class="['sidebar-label', (props.collapsed && !props.isMobileOpen) && 'opacity-0 max-w-0 ml-0']">Подписка</span>
+				</Button>
+			</RouterLink>
+			<RouterLink to="/interviews" custom v-slot="{ isExactActive, href, navigate }">
+				<Button :variant="isExactActive ? 'light' : 'flat'" :color="isExactActive ? 'primary' : 'default'" :href="href"
+					@click="navigate" tag="a"
+					:class="['justify-start', isExactActive && 'font-medium', (props.collapsed && !props.isMobileOpen) && 'px-3.5! w-12! justify-center']">
+					<template #icon-before>
+						<Mic class="size-5 shrink-0" />
+					</template>
+					<span
+						:class="['sidebar-label', (props.collapsed && !props.isMobileOpen) && 'opacity-0 max-w-0 ml-0']">Интервью</span>
+				</Button>
+			</RouterLink>
+			<RouterLink to="/vacancies" custom v-slot="{ isExactActive, href, navigate }">
+				<Button :variant="isExactActive ? 'light' : 'flat'" :color="isExactActive ? 'primary' : 'default'" :href="href"
+					@click="navigate" tag="a"
+					:class="['justify-start', isExactActive && 'font-medium', (props.collapsed && !props.isMobileOpen) && 'px-3.5! w-12! justify-center']">
+					<template #icon-before>
+						<Briefcase class="size-5 shrink-0" />
+					</template>
+					<span
+						:class="['sidebar-label', (props.collapsed && !props.isMobileOpen) && 'opacity-0 max-w-0 ml-0']">Вакансии</span>
+				</Button>
+			</RouterLink>
 		</nav>
 		<div class="flex flex-col gap-y-2 mt-auto">
 			<!-- Счетчик откликов (планшеты/десктоп, только в раскрытом виде) -->
 			<Transition name="fade">
-				<div v-if="!props.collapsed" class="hidden sm:flex items-center gap-3 py-3 px-4 bg-gray-100 rounded-lg">
+				<div v-if="!props.collapsed" class="hidden sm:flex items-center gap-3 py-3 px-4 bg-gray-100 rounded-xl">
 					<FileInput class="size-5 shrink-0" />
 					<div class="flex flex-col items-start sidebar-label">
 						<span class="font-medium">10 из 20</span>
