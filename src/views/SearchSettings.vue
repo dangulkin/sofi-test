@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
 import { getExperiences, type ExperienceLevel, type VacancySearchParams } from '@/api/positions';
 import { Button } from '@/components';
 import { pluralizeRu } from '@/lib/utils'
@@ -17,10 +17,11 @@ import { useVacancyCount } from '@/composables/useVacancyCount'
 import { ExternalLink, ArrowLeft } from 'lucide-vue-next';
 
 const router = useRouter();
+const route = useRoute();
 const experienceLevels = ref<ExperienceLevel[]>([]);
 
-// TODO: заменить на параметр из роута
-const currentPositionId = ref(558);
+// Получаем position_id из параметров роута
+const currentPositionId = computed(() => Number(route.params.position_id) || 0);
 
 const {
 	keywords,
@@ -45,6 +46,8 @@ const industriesCountText = computed(() => {
 const specializations = [...SPECIALIZATIONS]
 const experienceLabels: Record<ExperienceLevel, string> = EXPERIENCE_LABELS
 
+const isPreferencesLoaded = ref(false);
+
 onMounted(async () => {
 	try {
 		const levels = await getExperiences();
@@ -53,6 +56,9 @@ onMounted(async () => {
 		console.error('[experiences] Failed to load:', err);
 	}
 	await load();
+	isPreferencesLoaded.value = true;
+	// Запускаем подсчет вакансий после загрузки preferences
+	fetchVacancyCount();
 });
 
 function clearIndustries() {
@@ -75,9 +81,10 @@ const paramsGetter = () => {
 	};
 	return params;
 }
-const { vacancyCount, isLoading } = useVacancyCount(currentPositionId, paramsGetter, {
+const { vacancyCount, isLoading, fetch: fetchVacancyCount } = useVacancyCount(currentPositionId, paramsGetter, {
 	debounce: 800,
-	immediate: true,
+	immediate: false,
+	enabled: isPreferencesLoaded,
 	watchSource: [keywords, excludeWords, searchInTitle, searchInDescription, selectedIndustryIds, experience]
 })
 
@@ -88,7 +95,7 @@ async function handleSave() {
 
 <template>
 	<section :class="[
-		'w-full flex-1 space-y-7 p-3 sm:p-6 sm:pl-22 lg:p-8 mb-32 sm:mb-0 overflow-y-auto transition-all duration-300',
+		'w-full flex-1 space-y-7 p-3 sm:p-6 sm:pl-22 lg:p-8 mb-32 sm:mb-30 md:mb-0 overflow-y-auto transition-all duration-300',
 	]">
 		<div class="flex flex-col gap-3 sm:gap-auto sm:flex-row sm:items-center sm:justify-between">
 			<div class="flex items-center gap-4">
@@ -104,7 +111,8 @@ async function handleSave() {
 			</a>
 		</div>
 
-		<div class="flex flex-row-reverse justify-between gap-6 bg-white p-4 sm:p-6 xl:p-10 rounded-xl border border-gray-200">
+		<div
+			class="flex flex-row-reverse justify-between gap-6 bg-white p-4 sm:p-6 xl:p-10 rounded-xl border border-gray-200">
 			<SavePanel :isSaving="isSaving" :saveSucceeded="saveSucceeded" :isCounting="isLoading"
 				:vacancyCount="vacancyCount" :disabled="isPrefLoading" @save="handleSave" />
 

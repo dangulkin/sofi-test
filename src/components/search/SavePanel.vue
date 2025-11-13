@@ -14,7 +14,7 @@ const emit = defineEmits<{ (e: 'save'): void }>()
 
 <template>
 	<div
-		class="min-w-50 md:static p-4 md:p-0 md:mt-0 fixed left-0 sm:left-16 bottom-0 w-full sm:w-[calc(100%-4rem)] md:w-auto z-50! bg-white border-t border-gray-100 flex flex-col md:flex-col gap-3 md:rounded-none shadow-lg md:border-t-0 md:shadow-none">
+		class="min-w-50 md:static p-4 md:p-0 md:mt-0 fixed left-0 sm:left-16 bottom-0 w-full sm:w-[calc(100%-4rem)] md:w-auto z-40! bg-white border-t border-gray-100 flex flex-col md:flex-col gap-3 md:rounded-none shadow-lg md:border-t-0 md:shadow-none">
 		<Button color="primary" @click="emit('save')" :disabled="props.disabled || props.isSaving">
 			<LoaderCircle v-if="props.isSaving" class="size-5 animate-spin" />
 			<template v-else-if="props.saveSucceeded === true">

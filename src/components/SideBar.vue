@@ -60,7 +60,7 @@ onUnmounted(() => {
 						:class="['sidebar-label', (props.collapsed && !props.isMobileOpen) && 'opacity-0 max-w-0 ml-0']">Дашборд</span>
 				</Button>
 			</RouterLink>
-			<RouterLink to="/search-settings" custom v-slot="{ isExactActive, href, navigate }">
+			<RouterLink to="/positions" custom v-slot="{ isExactActive, href, navigate }">
 				<Button :variant="isExactActive ? 'light' : 'flat'" :color="isExactActive ? 'primary' : 'default'" :href="href"
 					@click="navigate" tag="a"
 					:class="['justify-start', isExactActive && 'font-medium', (props.collapsed && !props.isMobileOpen) && 'px-3.5! w-12! justify-center']">

@@ -2,12 +2,14 @@ import { ref, watch, type Ref } from 'vue'
 import { getTotalVacancies, type VacancySearchParams } from '@/api/positions'
 
 export interface UseVacancyCountOptions {
-	/** Debounce in ms before auto-fetch on changes */
+	// Задержка в мс перед автозапросом при изменениях
 	debounce?: number
-	/** Whether to start an initial fetch on mount */
+	// Запустить начальную загрузку сразу
 	immediate?: boolean
-	/** Watch source for triggering refetch (when using function params) */
+	// Источник для watch, триггерящий перезапрос (при использовании функции params) 
 	watchSource?: Ref<unknown> | Ref<unknown>[]
+	// Включен ли watch (позволяет отключить до готовности данных)
+	enabled?: Ref<boolean>
 }
 
 export function useVacancyCount(
@@ -45,15 +47,19 @@ export function useVacancyCount(
 	if (typeof paramsSource !== 'function') {
 		// Если params это Ref, следим за ним напрямую
 		watch(paramsSource, () => {
-			if (timer) clearTimeout(timer)
-			timer = setTimeout(() => { fetch() }, debounceMs) as unknown as number
+			if (!opts.enabled || opts.enabled.value) {
+				if (timer) clearTimeout(timer)
+				timer = setTimeout(() => { fetch() }, debounceMs) as unknown as number
+			}
 		}, { deep: true })
 	} else if (opts.watchSource) {
 		// Если params это функция, следим за переданным watchSource
 		const sources = Array.isArray(opts.watchSource) ? opts.watchSource : [opts.watchSource]
 		watch(sources, () => {
-			if (timer) clearTimeout(timer)
-			timer = setTimeout(() => { fetch() }, debounceMs) as unknown as number
+			if (!opts.enabled || opts.enabled.value) {
+				if (timer) clearTimeout(timer)
+				timer = setTimeout(() => { fetch() }, debounceMs) as unknown as number
+			}
 		}, { deep: true })
 	}
 
